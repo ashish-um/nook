@@ -100,7 +100,7 @@ Create `src/context/DriveContext.tsx`. This file does three things:
 "use client";
 
 import { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
-import { DriveCRUD } from "nook";
+import { DriveCRUD } from "@ashish-um/nook";
 
 const DriveContext = createContext(null);
 

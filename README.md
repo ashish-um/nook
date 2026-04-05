@@ -4,14 +4,12 @@ A reusable TypeScript module for using Google Drive as per-user cloud storage.
 
 ## Install
 
-```bash
-npm install drive-crud
-```
+npm install @ashish-um/nook
 
 ## Quick Start
 
 ```typescript
-import { DriveCRUD } from "drive-crud";
+import { DriveCRUD } from "@ashish-um/nook";
 
 const drive = new DriveCRUD(googleAccessToken);
 
@@ -56,7 +54,7 @@ await drive.delete("notes/hello.json");
 All errors are instances of `DriveError` with a typed `code`:
 
 ```typescript
-import { DriveError } from "drive-crud";
+import { DriveError } from "@ashish-um/nook";
 
 try {
   await drive.read("missing.json");
@@ -79,4 +77,4 @@ https://www.googleapis.com/auth/drive.appdata
 
 ## License
 
-ISC
+MIT

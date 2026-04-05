@@ -65,7 +65,7 @@ npm install ../path/to/nook
 ## Quick Start
 
 ```typescript
-import { DriveCRUD } from "nook";
+import { DriveCRUD } from "@ashish-um/nook";
 
 // Create an instance with a Google OAuth2 access token
 const drive = new DriveCRUD(accessToken);
@@ -384,7 +384,7 @@ drive.setToken(newToken);
 All errors thrown by `nook` are instances of `DriveError`, which extends the native `Error` class.
 
 ```typescript
-import { DriveCRUD, DriveError } from "nook";
+import { DriveCRUD, DriveError } from "@ashish-um/nook";
 ```
 
 ### `DriveError` properties
@@ -408,7 +408,7 @@ import { DriveCRUD, DriveError } from "nook";
 ### Handling errors
 
 ```typescript
-import { DriveCRUD, DriveError } from "nook";
+import { DriveCRUD, DriveError } from "@ashish-um/nook";
 
 try {
   const note = await drive.read("notes/missing.json");
@@ -489,7 +489,7 @@ const drive = new DriveCRUD(initialToken, {
 All types are exported from the package root.
 
 ```typescript
-import { DriveCRUD, DriveError, DriveFile, DriveCRUDOptions, DriveErrorCode } from "nook";
+import { DriveCRUD, DriveError, DriveFile, DriveCRUDOptions, DriveErrorCode } from "@ashish-um/nook";
 ```
 
 ### `DriveFile`

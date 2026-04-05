@@ -1,5 +1,5 @@
 {
-  "name": "drive-crud",
+  "name": "@ashish-um/nook",
   "version": "1.0.0",
   "description": "A reusable TypeScript module for using Google Drive as per-user cloud storage",
   "type": "module",
@@ -12,13 +12,18 @@
       "require": "./dist/index.cjs"
     }
   },
+  "files": ["dist"],
   "scripts": {
     "build": "tsup",
     "test": "vitest"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["google-drive", "crud", "storage", "appdata", "drive-api"],
+  "author": "ashish-um",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ashish-um/nook"
+  },
   "devDependencies": {
     "@types/node": "^25.5.2",
     "dotenv": "^17.4.0",
