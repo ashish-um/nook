@@ -4,7 +4,9 @@ A reusable TypeScript module for using Google Drive as per-user cloud storage.
 
 ## Install
 
+```
 npm install @ashish-um/nook
+```
 
 ## Quick Start
 
