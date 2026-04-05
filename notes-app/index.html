@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notes — Powered by Nook</title>
+  <meta name="description" content="A minimal notes app storing data in your Google Drive using the Nook DriveCRUD package." />
+
+  <!-- Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <!-- Modern Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Design Tokens ── */
+    :root {
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+      /* Light palette */
+      --bg: #f8f9fb;
+      --surface: #ffffff;
+      --sidebar-bg: #f1f3f5;
+      --border: #e9ecef;
+      --border-light: #f1f3f5;
+
+      --text-primary: #1a1a2e;
+      --text-secondary: #6c757d;
+      --text-muted: #adb5bd;
+
+      --accent: #4361ee;
+      --accent-hover: #3a56d4;
+      --accent-light: #eef0ff;
+
+      --danger: #e63946;
+      --danger-light: #fff0f1;
+
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+      --shadow-lg: 0 8px 30px rgba(0,0,0,0.08);
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+
+      --transition: 180ms ease;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body { display: flex; }
+
+    /* ── Auth Screen ── */
+    #auth-screen {
+      margin: auto;
+      text-align: center;
+      padding: 48px;
+      animation: fadeUp 0.5s ease;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    #auth-screen .logo {
+      width: 56px;
+      height: 56px;
+      background: var(--accent);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      box-shadow: 0 4px 16px rgba(67,97,238,0.25);
+    }
+
+    #auth-screen .logo svg {
+      width: 28px;
+      height: 28px;
+      fill: white;
+    }
+
+    #auth-screen h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: var(--text-primary);
+    }
+
+    #auth-screen .subtitle {
+      margin: 8px 0 28px;
+      color: var(--text-secondary);
+      font-size: 15px;
+      line-height: 1.5;
+      max-width: 320px;
+    }
+
+    /* GIS button styling overrides */
+    #auth-screen .g_id_signin {
+      display: inline-block;
+    }
+
+    /* ── App Container ── */
+    #app {
+      display: none;
+      width: 100%;
+      height: 100%;
+    }
+    #app.visible {
+      display: flex;
+      animation: fadeUp 0.35s ease;
+    }
+
+    /* ── Sidebar ── */
+    #sidebar {
+      width: 280px;
+      min-width: 280px;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 20px 16px;
+      gap: 16px;
+    }
+
+    .sidebar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 4px;
+    }
+
+    .sidebar-header .title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      color: var(--text-primary);
+    }
+
+    /* ── Buttons ── */
+    button {
+      font-family: var(--font);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      transition: all var(--transition);
+    }
+
+    button:hover {
+      background: var(--border-light);
+      border-color: #dde1e5;
+    }
+
+    button:active {
+      transform: scale(0.97);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+      width: 100%;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: -0.1px;
+      box-shadow: 0 2px 8px rgba(67,97,238,0.2);
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
+      box-shadow: 0 4px 12px rgba(67,97,238,0.3);
+    }
+
+    .btn-danger {
+      color: var(--danger);
+      border-color: transparent;
+      background: var(--danger-light);
+    }
+
+    .btn-danger:hover {
+      background: #ffe0e3;
+      border-color: transparent;
+    }
+
+    .btn-ghost {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      padding: 6px 10px;
+      font-size: 12px;
+    }
+
+    .btn-ghost:hover {
+      color: var(--text-secondary);
+      background: rgba(0,0,0,0.04);
+    }
+
+    /* ── Note List ── */
+    #note-list {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    #note-list::-webkit-scrollbar { width: 4px; }
+    #note-list::-webkit-scrollbar-track { background: transparent; }
+    #note-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    .note-item {
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all var(--transition);
+    }
+
+    .note-item:hover {
+      background: rgba(0,0,0,0.03);
+    }
+
+    .note-item.active {
+      background: var(--surface);
+      border-color: var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .note-item .note-title {
+      font-weight: 500;
+      font-size: 14px;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .note-item .note-date {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    .empty-list {
+      color: var(--text-muted);
+      font-size: 13px;
+      text-align: center;
+      padding: 32px 16px;
+      line-height: 1.5;
+    }
+
+    /* ── Editor Pane ── */
+    #editor-pane {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: var(--surface);
+      min-width: 0;
+    }
+
+    #empty-state {
+      margin: auto;
+      text-align: center;
+      color: var(--text-muted);
+      animation: fadeUp 0.4s ease;
+    }
+
+    #empty-state .icon {
+      width: 48px;
+      height: 48px;
+      background: var(--accent-light);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+    }
+
+    #empty-state .icon svg {
+      width: 24px;
+      height: 24px;
+      fill: var(--accent);
+    }
+
+    #empty-state p {
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* ── Editor ── */
+    #editor {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+      animation: fadeUp 0.3s ease;
+    }
+
+    #editor-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 32px 0;
+      gap: 16px;
+    }
+
+    #note-title-input {
+      font-family: var(--font);
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      border: none;
+      outline: none;
+      width: 100%;
+      background: transparent;
+      color: var(--text-primary);
+    }
+
+    #note-title-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .toolbar-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    #save-status {
+      font-size: 12px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      transition: color var(--transition);
+    }
+
+    #save-status.saving {
+      color: var(--accent);
+    }
+
+    #note-body-input {
+      font-family: var(--font);
+      flex: 1;
+      border: none;
+      outline: none;
+      resize: none;
+      font-size: 15px;
+      line-height: 1.75;
+      color: var(--text-primary);
+      padding: 16px 32px 32px;
+      background: transparent;
+    }
+
+    #note-body-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    /* ── Loading Spinner ── */
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ── Button Loading State ── */
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    button .spinner {
+      vertical-align: middle;
+      margin-right: 4px;
+    }
+
+    /* ── Sidebar Skeleton Loader ── */
+    .skeleton-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 4px 0;
+    }
+
+    .skeleton-item {
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      background: rgba(0,0,0,0.03);
+    }
+
+    .skeleton-line {
+      height: 12px;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--border) 25%, var(--border-light) 50%, var(--border) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite ease-in-out;
+    }
+
+    .skeleton-line.short {
+      width: 50%;
+      height: 10px;
+      margin-top: 6px;
+    }
+
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* ── Editor Loading ── */
+    #editor-loading {
+      display: none;
+      flex: 1;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    #editor-loading .spinner {
+      width: 24px;
+      height: 24px;
+      border-width: 2.5px;
+    }
+
+    /* ── Responsive ── */
+    /* ── Google Sign-In Button ── */
+    .google-signin-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 24px;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      background: var(--surface);
+      font-family: var(--font);
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: all var(--transition);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .google-signin-btn:hover {
+      box-shadow: var(--shadow-md);
+      background: var(--bg);
+    }
+
+    .google-signin-btn:active {
+      transform: scale(0.97);
+    }
+
+    @media (max-width: 700px) {
+      #sidebar { width: 100%; min-width: unset; border-right: none; border-bottom: 1px solid var(--border); max-height: 40vh; }
+      body, #app.visible { flex-direction: column; }
+      #editor-toolbar { padding: 16px 20px 0; }
+      #note-body-input { padding: 12px 20px 20px; }
+      #note-title-input { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Auth Screen -->
+  <div id="auth-screen">
+    <div class="logo">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM6 20V4h7v5h5v11H6zm2-6h8v2H8v-2zm0-4h8v2H8v-2z"/></svg>
+    </div>
+    <h1>Notes</h1>
+    <p class="subtitle">Sign in to access your notes, stored privately in your own Google Drive.</p>
+
+    <button class="google-signin-btn" id="signin-btn">
+      <svg viewBox="0 0 48 48" width="20" height="20">
+        <path fill="#4285F4" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+        <path fill="#34A853" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+        <path fill="#FBBC05" d="M10.53 28.59a14.5 14.5 0 0 1 0-9.18l-7.98-6.19a24.06 24.06 0 0 0 0 21.56l7.98-6.19z"/>
+        <path fill="#EA4335" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+      </svg>
+      Sign in with Google
+    </button>
+  </div>
+
+  <!-- Main App -->
+  <div id="app">
+    <div id="sidebar">
+      <div class="sidebar-header">
+        <span class="title">Notes</span>
+        <button class="btn-ghost" id="sign-out-btn">Sign out</button>
+      </div>
+      <button class="btn-primary" id="new-note-btn">
+        <span style="margin-right:4px;">+</span> New Note
+      </button>
+      <div id="note-list">
+        <p class="empty-list">No notes yet.<br/>Create one to get started.</p>
+      </div>
+    </div>
+
+    <div id="editor-pane">
+      <div id="empty-state">
+        <div class="icon">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM6 20V4h7v5h5v11H6z"/></svg>
+        </div>
+        <p>Select a note or create a new one.</p>
+      </div>
+
+      <div id="editor-loading">
+        <div class="spinner"></div>
+        <span>Loading note…</span>
+      </div>
+
+      <div id="editor">
+        <div id="editor-toolbar">
+          <input id="note-title-input" type="text" placeholder="Untitled" />
+          <div class="toolbar-actions">
+            <span id="save-status"></span>
+            <button class="btn-danger" id="delete-note-btn">Delete</button>
+          </div>
+        </div>
+        <textarea id="note-body-input" placeholder="Start writing..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
