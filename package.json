@@ -1,6 +1,6 @@
 {
   "name": "@ashish-um/nook",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A reusable TypeScript module for using Google Drive as per-user cloud storage",
   "type": "module",
   "main": "./dist/index.cjs",
