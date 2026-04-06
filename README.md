@@ -31,6 +31,11 @@ const allNotes = await drive.list("notes/");
 await drive.delete("notes/hello.json");
 ```
 
+## Documentation
+
+- **[Full API Documentation](./nook-documentation.md)** — Detailed breakdown of every method, parameters, and error handling.
+- **[React & Next.js Guide](./nook-react-nextjs-guide.md)** — How to cleanly integrate Google Identity Services and DriveCRUD using context providers and hooks.
+
 ## API
 
 ### `new DriveCRUD(token, options?)`
