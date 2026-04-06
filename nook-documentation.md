@@ -51,7 +51,7 @@ Each user's data is completely isolated. User A's token can only access User A's
 ## Installation
 
 ```bash
-npm install nook
+npm install @ashish-um/nook
 ```
 
 Or with a local build:
