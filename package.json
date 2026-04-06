@@ -13,7 +13,9 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "nook-documentation.md",
+    "nook-react-nextjs-guide.md"
   ],
   "scripts": {
     "build": "tsup",
