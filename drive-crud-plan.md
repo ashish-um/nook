@@ -134,7 +134,6 @@ interface DriveFile {
 // Options when creating the DriveCRUD instance
 interface DriveCRUDOptions {
   appSpace?: "appDataFolder" | "drive";  // Where to store files. Default: "appDataFolder"
-  rootFolderName?: string;               // Only if appSpace="drive": name of root folder
 }
 
 // All possible error codes DriveCRUD can throw

@@ -7,7 +7,6 @@ export interface DriveFile {
 
 export interface DriveCRUDOptions {
   appSpace?: "appDataFolder" | "drive";
-  rootFolderName?: string;
   onTokenExpired?: () => Promise<string>;
 }
 

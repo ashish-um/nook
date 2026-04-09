@@ -43,7 +43,6 @@ await drive.delete("notes/hello.json");
 | Option | Type | Default | Description |
 |---|---|---|---|
 | `appSpace` | `"appDataFolder" \| "drive"` | `"appDataFolder"` | Where to store files |
-| `rootFolderName` | `string` | — | Root folder name (only for `appSpace: "drive"`) |
 
 ### Methods
 

@@ -155,7 +155,6 @@ new DriveCRUD(accessToken: string, options?: DriveCRUDOptions)
 | Option | Type | Default | Description |
 |---|---|---|---|
 | `appSpace` | `"appDataFolder" \| "drive"` | `"appDataFolder"` | Where to store files. `appDataFolder` is hidden and app-scoped (recommended). `drive` stores files visibly in the user's Drive. |
-| `rootFolderName` | `string` | `"AppData"` | Only used when `appSpace` is `"drive"`. The name of the root folder created in My Drive. |
 | `onTokenExpired` | `() => Promise<string>` | `undefined` | Callback invoked when the access token expires. Should return a new valid token. See [Token refresh](#token-refresh). |
 
 ### Examples
@@ -175,7 +174,6 @@ const drive = new DriveCRUD(accessToken, {
 // Store files visibly in user's Drive instead of hidden appDataFolder
 const drive = new DriveCRUD(accessToken, {
   appSpace: "drive",
-  rootFolderName: "My Notes App",
 });
 ```
 
@@ -510,7 +508,6 @@ interface DriveFile {
 ```typescript
 interface DriveCRUDOptions {
   appSpace?: "appDataFolder" | "drive";
-  rootFolderName?: string;
   onTokenExpired?: () => Promise<string>;
 }
 ```
