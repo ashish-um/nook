@@ -1,7 +1,7 @@
 import { DriveCRUD } from "./nook/index.js";
 
 // ─── App State ────────────────────────────────────────────────────────────────
-const CLIENT_ID = "440586625032-kfifni9affih1uh0plbrm3s5e2r83gin.apps.googleusercontent.com";
+const CLIENT_ID = "YOUR_CLIENT_ID";
 const SCOPE = "https://www.googleapis.com/auth/drive.appdata";
 
 let drive = null;       // DriveCRUD instance, created after sign-in
